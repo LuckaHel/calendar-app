@@ -1,8 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const nodemailer = require('nodemailer');
+
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
+
+const nodemailer = require('nodemailer');
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,14 +28,14 @@ app.post('/send-email', (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail', // You can change this to another email service
     auth: {
-      user: 'your-email@gmail.com', // Replace with your email
-      pass: 'your-email-password'   // Replace with your email password
+      user: 'testRehapiano@outlook.com', // Replace with your email
+      pass: 'rehapiano123*'   // Replace with your email password
     }
   });
 
   // Set up the email options
   const mailOptions = {
-    from: 'your-email@gmail.com',
+    from: 'rehapiano@gmial.com',
     to: email,
     subject: 'Confirmation Email',
     text: 'You have successfully booked a time slot!'
