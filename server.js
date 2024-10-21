@@ -1,11 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const port = process.env.PORT || 8080;
-
-const nodemailer = require('nodemailer');
-
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,34 +19,38 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-app.post('/send-email', (req, res) => {
+// POST route to send email
+app.post('/send-email', async (req, res) => {
   const { email } = req.body;
 
-  // Set up Nodemailer transporter
+  // Log the email that is being sent to for debugging
+  console.log(`Sending email to: ${email}`);
+
+  // Set up Nodemailer transporter with correct Outlook configuration
   const transporter = nodemailer.createTransport({
-    service: 'gmail', // You can change this to another email service
+    service: 'outlook',
     auth: {
-      user: 'testRehapiano@outlook.com', // Replace with your email
-      pass: 'rehapiano123*'   // Replace with your email password
+      user: 'testRehapiano@outlook.com', // Your Outlook email
+      pass: 'rehapiano123*'   // Your Outlook password
     }
   });
 
-  // Set up the email options
+  // Define email options
   const mailOptions = {
-    from: 'rehapiano@gmial.com',
+    from: 'testRehapiano@outlook.com',  // Make sure the 'from' email is correct
     to: email,
     subject: 'Confirmation Email',
     text: 'You have successfully booked a time slot!'
   };
 
-  // Send the email
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return res.status(500).send({ error: 'Failed to send email' });
-    } else {
-      res.status(200).send({ message: 'Email sent successfully' });
-    }
-  });
+  // Try to send the email and handle errors properly
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`Email sent successfully: ${info.response}`);  // Log success
+    res.status(200).send({ message: 'Email sent successfully' });
+  } catch (error) {
+    console.error('Error sending email:', error);  // Log the error for debugging
+    res.status(500).send({ error: 'Failed to send email' });
+  }
 });
-
 
