@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar App</title>
+  <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.css' rel='stylesheet' />
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    #calendar { max-width: 900px; margin: 40px auto; }
+    #emailForm { display: none; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+  <h1>Choose Your Time Slot</h1>
+  <div id="calendar"></div>
+
+  <div id="emailForm">
+    <h3>Enter your email to confirm the slot:</h3>
+    <input type="email" id="userEmail" placeholder="Enter your email" required>
+    <button onclick="submitEmail()">Submit</button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var selectedSlot = '';
+
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        events: [
+          { title: '9:00 AM Slot', start: '2024-10-22T09:00:00' },
+          { title: '10:00 AM Slot', start: '2024-10-22T10:00:00' }
+        ],
+        dateClick: function(info) {
+          selectedSlot = info.dateStr;
+          document.getElementById('emailForm').style.display = 'block';
+        }
+      });
+
+      calendar.render();
+    });
+
+    function submitEmail() {
+      var email = document.getElementById('userEmail').value;
+      if (email) {
+        fetch('/send-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: email })
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert('Email sent!');
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      } else {
+        alert('Please enter a valid email');
+      }
+    }
+  </script>
+</body>
+</html>
+
